@@ -10,7 +10,34 @@ def search(pattern, text):
 
 
 def match(pattern, text):
-    pass
+    "Match pattern at beginning of text"
+    print("matching %s in %s" % (pattern, text))
+    if pattern == '':
+        return True
+    elif pattern == '$':
+        return text == ''  # must match nothing before end of word
+    elif len(pattern) >= 2 and pattern[1] in '*?':
+        # need to match letter with wildcard modifier
+        p, op, pat = pattern[0], pattern[1], pattern[2:]
+        if op == '*':
+            return ((match1(p, text) and match(pattern, text[1:])) or  # match at least 1 char
+                    match(pat, text))  # or match none
+        elif op == '?':
+            return ((match1(p, text) and match(pat, text[1:])) or  # match 1 char
+                    match(pat, text))  # or match none
+    else:
+        # the next pattern token to match is single letter
+        return match1(pattern[0], text) and match(pattern[1:], text[1:])
+
+
+def match1(p, text):
+    "Match 1 letter at beginning of text"
+    if text == "":
+        return False
+    elif p == '.':
+        return True
+    else:
+        return p == text[0]
 
 
 def test():
@@ -18,7 +45,7 @@ def test():
     assert search('baa*!', "Sheep said baaaa humbug") == False
     assert match('baa*!', "Sheep said baaaa!") == False
     assert match('baa*!', "baaaaaaaaa! said the sheep")
-    assert search('def', 'abcedfg')
+    assert search('def', 'abcdefg')
     assert search('def$', 'abcdef')
     assert search('def$', 'abcedfg') == False
     assert search('^start', 'not the start') == False
@@ -29,3 +56,8 @@ def test():
     assert match('text?', 'tex')
 
     def words(text): return text.split()
+
+    return "test passes"
+
+
+print(test())
