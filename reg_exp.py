@@ -32,12 +32,10 @@ def match(pattern, text):
 
 def match1(p, text):
     "Match 1 letter at beginning of text"
-    if text == "":
+    if not text:  # empty text
         return False
-    elif p == '.':
-        return True
     else:
-        return p == text[0]
+        return p == '.' or p == text[0]
 
 
 def test():
